@@ -7,16 +7,17 @@ import javax.swing.JOptionPane;
 
 import com.google.common.base.Strings;
 import com.hujiang.generator.code.Generator4BeanAndDao;
-import com.hujiang.generator.main.GeneratorMain;
+import com.hujiang.generator.config.PropertiesOperate;
+import com.hujiang.generator.main.GeneratorPanel;
+import com.hujiang.generator.popup.actions.RefreshAction;
 
 public class GenneratorListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent actionEvent) {
-		String table = GeneratorMain.tableTextField.getText();
-		String packagText = GeneratorMain.packageTextLabel.getText();
-		String filePath = GeneratorMain.filePathTextLabel.getText();
-		
+		String table = GeneratorPanel.tableTextField.getText();
+		String packagText = GeneratorPanel.packageTextLabel.getText();
+		String filePath = PropertiesOperate.getProjectJavaPath();
 		if (Strings.isNullOrEmpty(table) || Strings.isNullOrEmpty(packagText) || Strings.isNullOrEmpty(filePath)) {
 			JOptionPane.showMessageDialog(null, "各个参数为必填项，请认真填写！", "友情提示", JOptionPane.WARNING_MESSAGE);
 			return;
@@ -26,6 +27,7 @@ public class GenneratorListener implements ActionListener {
 		try {
 			generator.generateCode(table, packagText, filePath);
 			JOptionPane.showMessageDialog(null, "文件已生成。", "友情提示", JOptionPane.PLAIN_MESSAGE);
+			RefreshAction.refresh();
 			return;
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "生成文件失败！", "友情提示", JOptionPane.ERROR_MESSAGE);

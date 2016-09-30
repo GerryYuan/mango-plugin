@@ -10,7 +10,7 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
 import com.hujiang.generator.config.PropertiesOperate;
-import com.hujiang.generator.main.GeneratorMain;
+import com.hujiang.generator.main.GeneratorPanel;
 
 public class GeneratorCodeAction implements IObjectActionDelegate {
 
@@ -36,19 +36,10 @@ public class GeneratorCodeAction implements IObjectActionDelegate {
 	public void run(IAction action) {
 		try {
 			PropertiesOperate.init();
-			new GeneratorMain().generatorPanel();
+			new GeneratorPanel().generatorPanel();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		/*try {
-			MessageDialog.openInformation(shell, "Generator", PropertiesOperate.getString("generator.file.package"));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
 	}
 
 	/**

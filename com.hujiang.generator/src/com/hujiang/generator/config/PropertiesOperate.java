@@ -15,10 +15,17 @@ import org.eclipse.ui.PlatformUI;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.hujiang.generator.popup.actions.RefreshAction;
 
 public class PropertiesOperate {
 
-	static final String DEFAULT_PROPERTIES_URL = File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "application.properties";
+	static final String SRC_MAIN_URL_STRING = File.separator + "src" + File.separator + "main";
+
+	static final String RESOURCES_URL_STRING = SRC_MAIN_URL_STRING + File.separator + "resources";
+
+	static final String JAVA_URL_STRING = SRC_MAIN_URL_STRING + File.separator + "java";
+
+	static final String DEFAULT_PROPERTIES_URL = RESOURCES_URL_STRING + File.separator + "application.properties";
 
 	static Map<String, String> propertyMaps = Maps.newHashMap();
 
@@ -38,10 +45,14 @@ public class PropertiesOperate {
 		return PropertiesOperate.readProperties(getProjectPath() + DEFAULT_PROPERTIES_URL).get(key);
 	}
 
-	public static void init() throws FileNotFoundException, IOException{
+	public static void init() throws FileNotFoundException, IOException {
 		PropertiesOperate.readProperties(getProjectPath() + DEFAULT_PROPERTIES_URL);
 	}
-	
+
+	public static String getProjectJavaPath() {
+		return getProjectPath() + JAVA_URL_STRING + File.separator;
+	}
+
 	public static String getProjectPath() {
 		if (!Strings.isNullOrEmpty(projectPath)) {
 			return projectPath;
@@ -52,6 +63,7 @@ public class PropertiesOperate {
 			Object firstElement = selection.getFirstElement();
 			if (firstElement instanceof IAdaptable) {
 				IProject project = (IProject) ((IAdaptable) firstElement).getAdapter(IProject.class);
+				RefreshAction.register(project);
 				projectPath = project.getLocation().toFile().getAbsolutePath();
 			}
 		}

@@ -14,7 +14,7 @@ import javax.swing.JTextField;
 
 import com.hujiang.generator.listener.GenneratorListener;
 
-public class GeneratorMain extends JFrame {
+public class GeneratorPanel extends JFrame {
 	/**
 	 * serialVersionUID
 	 */
@@ -27,11 +27,7 @@ public class GeneratorMain extends JFrame {
 	// package
 	private JLabel packageLabel = new JLabel("Java类包名：");
 	public static JTextField packageTextLabel = new JTextField(10);
-	
-	// filePath
-	private JLabel filePathLabel = new JLabel("Java类文件位置：");
-	public static JTextField filePathTextLabel =  new JTextField(10);
-	
+
 	public void generatorPanel() throws FileNotFoundException, IOException {
 		this.setTitle("代码生成器");
 		this.setVisible(true);
@@ -41,7 +37,7 @@ public class GeneratorMain extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		Container con = this.getContentPane();
-		GridLayout myLayout = new GridLayout(4, 1);
+		GridLayout myLayout = new GridLayout(3, 1);
 		myLayout.setHgap(10);
 		myLayout.setVgap(10);
 
@@ -61,31 +57,15 @@ public class GeneratorMain extends JFrame {
 		jPanel2.add(packageLabel);
 		jPanel2.add(packageTextLabel);
 
-		// 第3行
-		JPanel jPanel3 = new JPanel();
-		jPanel3.setLayout(new GridLayout(1, 2));
-		jPanel3.add(filePathLabel);
-		jPanel3.add(filePathTextLabel);
-
 		// 第4行
 		JButton button = new JButton("生成");
 		button.addActionListener(new GenneratorListener());
 
 		jPanelMain.add(jPanel1);
 		jPanelMain.add(jPanel2);
-		jPanelMain.add(jPanel3);
 		jPanelMain.add(button);
 		con.add(jPanelMain);
 		this.pack();
-	}
-
-	
-	public static boolean isEmpty(String str) {
-		return str == null || str.trim().length() == 0;
-	}
-
-	public static void main(String[] args) throws FileNotFoundException, IOException {
-		new GeneratorMain().generatorPanel();
 	}
 
 }
