@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
 import com.google.common.base.Strings;
 import com.hujiang.generator.code.Generator4BeanAndDao;
 import com.hujiang.generator.config.PropertiesOperate;
-import com.hujiang.generator.main.GeneratorPanel;
+import com.hujiang.generator.panel.GeneratorPanel;
 import com.hujiang.generator.popup.actions.RefreshAction;
 
 public class GenneratorListener implements ActionListener {

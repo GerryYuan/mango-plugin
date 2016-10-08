@@ -1,4 +1,4 @@
-package com.hujiang.generator.main;
+package com.hujiang.generator.panel;
 
 import java.awt.Container;
 import java.awt.GridLayout;

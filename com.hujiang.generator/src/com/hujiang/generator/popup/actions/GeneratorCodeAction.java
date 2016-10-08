@@ -10,7 +10,7 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
 import com.hujiang.generator.config.PropertiesOperate;
-import com.hujiang.generator.main.GeneratorPanel;
+import com.hujiang.generator.panel.GeneratorPanel;
 
 public class GeneratorCodeAction implements IObjectActionDelegate {
 
