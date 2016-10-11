@@ -34,8 +34,8 @@ public class GeneratorPanel extends JFrame {
 		this.setResizable(false);
 		this.setSize(400, 400);
 		this.setLocationRelativeTo(null);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
 		Container con = this.getContentPane();
 		GridLayout myLayout = new GridLayout(3, 1);
 		myLayout.setHgap(10);
@@ -60,7 +60,7 @@ public class GeneratorPanel extends JFrame {
 		// 第4行
 		JButton button = new JButton("生成");
 		button.addActionListener(new GenneratorListener());
-
+		
 		jPanelMain.add(jPanel1);
 		jPanelMain.add(jPanel2);
 		jPanelMain.add(button);
