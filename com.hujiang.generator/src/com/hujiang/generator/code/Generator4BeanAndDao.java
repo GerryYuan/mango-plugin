@@ -16,8 +16,6 @@ import java.util.Map;
 
 import javax.lang.model.element.Modifier;
 
-import lombok.Data;
-
 import org.jfaster.mango.annotation.DB;
 import org.jfaster.mango.annotation.SQL;
 
@@ -35,6 +33,10 @@ import com.squareup.javapoet.TypeSpec;
 
 public class Generator4BeanAndDao {
 
+	private static final String METHOD_GET = "get";
+
+	private static final String METHOD_SET = "set";
+
 	private boolean idExist;
 
 	private static final String ID = "ID";
@@ -46,7 +48,12 @@ public class Generator4BeanAndDao {
 	/**
 	 * 代码生成
 	 * 
+	 * @param ip
+	 * @param port
+	 * @param database
 	 * @param table
+	 * @param uname
+	 * @param pwd
 	 * @param pk
 	 * @param filePath
 	 * @throws IOException
@@ -55,16 +62,13 @@ public class Generator4BeanAndDao {
 		Map<String, Integer> columnMap = this.getColumnFromDBTable(table);
 
 		// 生成Bean文件
-		AnnotationSpec beanAnnotationSpec = AnnotationSpec.builder(Data.class).build();
-
 		TypeSpec bean = TypeSpec.classBuilder(CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, table)).addModifiers(Modifier.PUBLIC).addFields(this.generateBeanFields(columnMap))
-				.addAnnotation(beanAnnotationSpec).addSuperinterface(Serializable.class).build();
-
+				.addMethods(this.generateBeanMethods(columnMap)).addSuperinterface(Serializable.class).build();
 		JavaFile javaFile = JavaFile.builder(pk, bean).build();
 		javaFile.writeTo(new File(filePath));
 
 		// 生成Dao文件
-		AnnotationSpec annotationSpec = AnnotationSpec.builder(DB.class).addMember("dataSource", "Consts.DB_HUJIANG").addMember("table", "$S", table).build();
+		AnnotationSpec annotationSpec = AnnotationSpec.builder(DB.class).addMember("dataSource", "Consts.DB_LETV_BOSS").addMember("table", "$S", table).build();
 		TypeSpec dao = TypeSpec.interfaceBuilder(CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, table) + "Dao").addModifiers(Modifier.PUBLIC).addAnnotation(annotationSpec)
 				.addFields(generateDaoFields(columnMap)).addMethods(generateDaoMethods(columnMap, table, pk)).build();
 		javaFile = JavaFile.builder(pk, dao).build();
@@ -308,6 +312,63 @@ public class Generator4BeanAndDao {
 	}
 
 	/**
+	 * 生成Bean get/set方法
+	 * 
+	 * @param columnMap
+	 * @return
+	 */
+	private List<MethodSpec> generateBeanMethods(Map<String, Integer> columnMap) {
+		List<MethodSpec> methods = new ArrayList<MethodSpec>();
+		for (Map.Entry<String, Integer> entry : columnMap.entrySet()) {
+			if (entry.getValue() == Types.VARCHAR || entry.getValue() == Types.CHAR) {
+				methods.add(this.createGetMethodSpec(String.class, entry.getKey()));
+				methods.add(this.createSetMethodSpec(String.class, entry.getKey()));
+			} else if (entry.getValue() == Types.INTEGER || entry.getValue() == Types.TINYINT) {
+				methods.add(this.createGetMethodSpec(Integer.class, entry.getKey()));
+				methods.add(this.createSetMethodSpec(Integer.class, entry.getKey()));
+			} else if (entry.getValue() == Types.BIGINT) {
+				methods.add(this.createGetMethodSpec(Long.class, entry.getKey()));
+				methods.add(this.createSetMethodSpec(Long.class, entry.getKey()));
+			} else if (entry.getValue() == Types.DATE || entry.getValue() == Types.TIME || entry.getValue() == Types.TIMESTAMP) {
+				methods.add(this.createGetMethodSpec(java.util.Date.class, entry.getKey()));
+				methods.add(this.createSetMethodSpec(java.util.Date.class, entry.getKey()));
+			} else if (entry.getValue() == Types.FLOAT || entry.getValue() == Types.DOUBLE) {
+				methods.add(this.createGetMethodSpec(Double.class, entry.getKey()));
+				methods.add(this.createSetMethodSpec(Double.class, entry.getKey()));
+			} else if (entry.getValue() == Types.DECIMAL) {
+				methods.add(this.createGetMethodSpec(BigDecimal.class, entry.getKey()));
+				methods.add(this.createSetMethodSpec(BigDecimal.class, entry.getKey()));
+			}
+		}
+
+		return methods;
+	}
+
+	/**
+	 * 创建SetMethodSpec
+	 * 
+	 * @param clz
+	 * @param columnName
+	 * @return
+	 */
+	private MethodSpec createSetMethodSpec(Class<?> clz, String columnName) {
+		return MethodSpec.methodBuilder(METHOD_SET + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, columnName)).addModifiers(Modifier.PUBLIC).returns(void.class).addParameter(clz, columnName)
+				.addStatement("this. " + columnName + " = " + columnName).build();
+	}
+
+	/**
+	 * 创建GetMethodSpec
+	 * 
+	 * @param clz
+	 * @param columnName
+	 * @return
+	 */
+	private MethodSpec createGetMethodSpec(Class<?> clz, String columnName) {
+		return MethodSpec.methodBuilder(METHOD_GET + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, columnName)).addModifiers(Modifier.PUBLIC).returns(clz).addStatement("return " + columnName)
+				.build();
+	}
+
+	/**
 	 * 生成Bean属性内容
 	 * 
 	 * @param columnMap
@@ -342,18 +403,13 @@ public class Generator4BeanAndDao {
 	 * @return
 	 */
 	private FieldSpec createFieldSpec(Class<?> clz, String columnName) {
-		return FieldSpec.builder(clz, columnName, Modifier.PRIVATE).build();
+		return FieldSpec.builder(clz, columnName, Modifier.PUBLIC).build();
 	}
 
 	/**
 	 * 从db获取指定table的属性字段及其类型
 	 * 
-	 * @param ip
-	 * @param port
-	 * @param database
 	 * @param table
-	 * @param uname
-	 * @param pwd
 	 * @return
 	 */
 	private Map<String, Integer> getColumnFromDBTable(String table) throws Exception {
